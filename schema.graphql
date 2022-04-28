@@ -1,0 +1,92 @@
+
+
+type Token @entity {
+  id: ID!
+  symbol: String!
+  name: String!
+  decimal: Int!
+  price: BigDecimal!
+}
+
+
+type BondContract @entity {
+  id: ID!
+  token: Token!
+  payoutToken: Token!
+  totalDeposit: BigDecimal!
+  totalPayout: BigDecimal!
+  bonds: [BondRecord!]! @derivedFrom(field: "contract")
+  snapshots: [BondSnapshotRecord!]! @derivedFrom(field: "contract")
+}
+
+type StakeContract @entity {
+  id: ID!
+  stakes: [StakeRecord!]! @derivedFrom(field: "contract")
+  boost: BigDecimal!
+  locktime: BigInt!
+  tvl: BigDecimal!
+  totalStake: BigDecimal!
+  totalUnstake: BigDecimal!
+}
+
+type User @entity {
+  id: ID!
+  joinTime: BigInt!
+  totalBondDepositUSD: BigDecimal!
+  totalBondPayout: BigDecimal!
+  totalBondCount: BigInt!
+  totalStake: BigDecimal!
+  totalUnstake: BigDecimal!
+  bonds: [BondRecord!]! @derivedFrom(field: "user")
+  stakes: [StakeRecord!]! @derivedFrom(field: "user")
+}
+
+type BondRecord @entity {
+  id: ID!
+  user: User!
+  tx: Bytes!
+  timestamp: BigInt!
+  contract: BondContract!
+  deposit: BigDecimal!
+  depositUSD: BigDecimal!
+  payout: BigDecimal!
+  # payoutUSD: BigDecimal!
+  priceUSD: BigDecimal!
+  # discount: BigDecimal!
+}
+
+enum StakeAction {
+  STAKE
+  UNSTAKE
+}
+
+type StakeRecord @entity {
+  id: ID!
+  user: User!
+  tx: Bytes!
+  timestamp: BigInt!
+  contract: StakeContract!
+  amount: BigDecimal!
+  action: StakeAction!
+  # stakedUSD: BigDecimal!
+}
+
+type BondSnapshotRecord @entity {
+  id: ID!
+  contract: BondContract!
+  timestamp: BigInt!
+  depositCummulated: BigDecimal!
+  # depositCummulatedInUSD: BigDecimal!
+  bondCummulated: BigDecimal!
+  # bondCummulatedInUSD: BigDecimal!
+}
+
+
+type StakeSnapshotRecord @entity {
+  id: ID!
+  contract: StakeContract!
+  timestamp: BigInt!
+  tvl: BigDecimal!
+  # tvlUSD: BigDecimal!
+}
+
