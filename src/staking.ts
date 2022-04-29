@@ -11,6 +11,7 @@ import {
   Unstake
 } from "../generated/StakingVault/StakingVault"
 import { getBondStake, getUser } from "./share"
+import { updateStakeSnapshot } from "./snapshot"
 import { convertEthToDecimal, joinHyphen } from "./utils"
 
 export function handleApproval(event: Approval): void {}
@@ -42,6 +43,9 @@ export function handleStake(event: Stake): void {
 
   user.totalStake = user.totalStake.plus(entity.amount);
   user.save();
+
+  updateStakeSnapshot(event.address, event);
+
 }
 
 export function handleUnstake(event: Unstake): void {
@@ -66,6 +70,9 @@ export function handleUnstake(event: Unstake): void {
 
   user.totalUnstake = user.totalUnstake.plus(entity.amount);
   user.save();
+
+  updateStakeSnapshot(event.address, event);
+
 }
 
 

@@ -71,14 +71,41 @@ type StakeRecord @entity {
   # stakedUSD: BigDecimal!
 }
 
+type DataRegistry @entity {
+  id: ID!
+  bonds: [BondContract!]!
+  stakes: [StakeContract!]!
+  tokens: [Token!]!
+}
+
+
+type Snapshot @entity {
+  id: ID!
+  timestamp: BigInt!
+  bondsSnapshot: [BondSnapshotRecord!] @derivedFrom(field: "snapshot")
+  stakesSnapshot: [StakeSnapshotRecord!] @derivedFrom(field: "snapshot")
+}
+
+type HourlySnappshot @entity {
+  id: ID!
+  timestamp: BigInt!
+  snapshot: Snapshot!
+}
+
+type DailySnappshot @entity {
+  id: ID!
+  timestamp: BigInt!
+  snapshot: Snapshot!
+}
+
 type BondSnapshotRecord @entity {
   id: ID!
   contract: BondContract!
   timestamp: BigInt!
   depositCummulated: BigDecimal!
-  # depositCummulatedInUSD: BigDecimal!
+  depositCummulatedUSD: BigDecimal!
   bondCummulated: BigDecimal!
-  # bondCummulatedInUSD: BigDecimal!
+  snapshot: Snapshot!
 }
 
 
@@ -87,6 +114,7 @@ type StakeSnapshotRecord @entity {
   contract: StakeContract!
   timestamp: BigInt!
   tvl: BigDecimal!
-  # tvlUSD: BigDecimal!
+  tvlUSD: BigDecimal!
+  snapshot: Snapshot!
 }
 

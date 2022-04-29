@@ -12,6 +12,7 @@ import {
 } from "../generated/DynamicBond/DynamicBond"
 import { BondRecord } from "../generated/schema"
 import { getBondPool, getToken, getUser } from "./share"
+import { updateBondSnapshot } from "./snapshot"
 import { convertEthToDecimal, convertTokenToDecimal, joinHyphen } from "./utils"
 import { BIG_INT_ONE } from "./utils/const"
 
@@ -50,6 +51,9 @@ export function handleBond(event: Bond): void {
   bondPool.totalDeposit = bondPool.totalDeposit.plus(entity.deposit);
   bondPool.totalPayout = bondPool.totalDeposit.plus(entity.payout);
   bondPool.save()
+
+
+  updateBondSnapshot(event.address, event);
 }
 
 export function handleClaim(event: Claim): void { }

@@ -2,6 +2,53 @@ specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
+  # - kind: ethereum/contract
+  #   name: DynamicBond
+  #   network: bsc
+  #   source:
+  #     address: "0x71a5EC38ed2238FEDf9f5e3A09e3c35F9c0e09Ed"
+  #     abi: DynamicBond
+  #     startBlock: 17329192
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.5
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - AdjustBondTerm
+  #       - AdjustBondTermFinish
+  #       - Bond
+  #       - Claim
+  #       - OwnershipTransferred
+  #       - Paused
+  #       - SetBondTerm
+  #       - Unpaused
+  #     abis:
+  #       - name: DynamicBond
+  #         file: ./abis/DynamicBond.json
+  #       - name: ERC20
+  #         file: ./abis/ERC20.json
+  #       - name: Pair
+  #         file: ./abis/Pair.json
+  #       - name: Factory
+  #         file: ./abis/Factory.json
+  #     eventHandlers:
+  #       - event: AdjustBondTerm(uint256,uint256,uint256)
+  #         handler: handleAdjustBondTerm
+  #       - event: AdjustBondTermFinish(uint256,uint256,uint256)
+  #         handler: handleAdjustBondTermFinish
+  #       - event: Bond(indexed address,uint256,uint256)
+  #         handler: handleBond
+  #       - event: Claim(indexed address,uint256)
+  #         handler: handleClaim
+  #       - event: OwnershipTransferred(indexed address,indexed address)
+  #         handler: handleOwnershipTransferred
+  #       - event: Paused(address)
+  #         handler: handlePaused
+  #       - event: SetBondTerm(uint256,uint256,uint256,uint256)
+  #         handler: handleSetBondTerm
+  #       - event: Unpaused(address)
+  #         handler: handleUnpaused
+  #     file: ./src/bonding.ts
   - kind: ethereum/contract
     name: DynamicBond1
     network: bsc
@@ -27,6 +74,10 @@ dataSources:
           file: ./abis/DynamicBond.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -70,6 +121,10 @@ dataSources:
           file: ./abis/DynamicBond.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -113,6 +168,10 @@ dataSources:
           file: ./abis/DynamicBond.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -157,6 +216,10 @@ dataSources:
           file: ./abis/StakingDistributor.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -199,6 +262,10 @@ dataSources:
           file: ./abis/StakingDistributor.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -241,6 +308,10 @@ dataSources:
           file: ./abis/StakingDistributor.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -283,6 +354,10 @@ dataSources:
           file: ./abis/StakingDistributor.json
         - name: ERC20
           file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
