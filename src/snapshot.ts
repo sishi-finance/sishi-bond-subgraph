@@ -1,12 +1,13 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, ethereum } from "@graphprotocol/graph-ts";
 import { DynamicBond } from "../generated/DynamicBond/DynamicBond";
 import { BondContract, BondSnapshotRecord, DailySnappshot, DataRegistry, HourlySnappshot, Snapshot, StakeSnapshotRecord } from "../generated/schema";
 import { StakingVault } from "../generated/StakingVault/StakingVault";
 import { getBondPool, getBondRegistry, getToken } from "./share";
 import { convertEthToDecimal, convertTokenToDecimal, joinHyphen } from "./utils";
-import { BIG_INT_ZERO } from "./utils/const";
+import { BIG_INT_ONE_YEAR_SECONDS, BIG_INT_ZERO } from "./utils/const";
 import { getDecimals, getUSDRate } from "./utils/pricing";
 import { log } from '@graphprotocol/graph-ts'
+import { DistributeReward, StakingDistributor } from "../generated/StakingVault/StakingDistributor";
 
 
 
@@ -79,6 +80,10 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
         recordToSave.depositCummulated = latestRecord.depositCummulated;
         recordToSave.depositCummulatedUSD = latestRecord.depositCummulatedUSD;
         recordToSave.bondCummulated = latestRecord.bondCummulated;
+        recordToSave.bondCummulated = latestRecord.bondCummulated;
+        recordToSave.bondPrice = latestRecord.bondPrice;
+        recordToSave.bondDiscount = latestRecord.bondDiscount;
+        recordToSave.bondAvailable = latestRecord.bondAvailable;
 
         recordToSave.timestamp = saveSnapshotTimestamp;
         recordToSave.snapshot = snapshot.id;
@@ -97,6 +102,8 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
         recordToSave.tvl = latestRecord.tvl;
         recordToSave.tvlUSD = latestRecord.tvlUSD;
+        recordToSave.pendingReward = latestRecord.pendingReward;
+
         recordToSave.timestamp = saveSnapshotTimestamp;
         recordToSave.snapshot = snapshot.id;
         recordToSave.save()
@@ -142,6 +149,7 @@ export function updateBondSnapshot(contract: Address, event: ethereum.Event): vo
 
   let iBond = DynamicBond.bind(contract);
   let depositToken = getToken(iBond.depositToken())
+  let payoutToken = getToken(iBond.payoutToken())
 
   let bondSnapshot = getBondSnapshot(bondSnapshotId, contract.toHex(), LATEST_ID)
 
@@ -149,6 +157,9 @@ export function updateBondSnapshot(contract: Address, event: ethereum.Event): vo
   bondSnapshot.bondCummulated = convertEthToDecimal(iBond.bondCumulated());
   bondSnapshot.depositCummulatedUSD = bondSnapshot.depositCummulated.times(depositToken.price)
   bondSnapshot.timestamp = event.block.timestamp;
+  bondSnapshot.bondPrice = convertEthToDecimal(iBond.currentBondPrice());
+  bondSnapshot.bondAvailable = convertEthToDecimal(iBond.bondAvailable());
+  bondSnapshot.bondDiscount = BigDecimal.fromString("1").minus(bondSnapshot.bondPrice.div(payoutToken.price));
 
   bondSnapshot.save()
 
@@ -160,6 +171,7 @@ export function updateStakeSnapshot(contract: Address, event: ethereum.Event): v
   let stakeSnapshotId = joinHyphen([contract.toHex(), LATEST_ID])
 
   let iStake = StakingVault.bind(contract);
+  let iDistribute = StakingDistributor.bind(iStake.REWARD_DISTRIBUTOR());
 
   let stakeSnapshot = getStakeSnapshot(stakeSnapshotId, contract.toHex(), LATEST_ID)
   let stakeToken = getToken(iStake.WANT_TOKEN())
@@ -167,6 +179,7 @@ export function updateStakeSnapshot(contract: Address, event: ethereum.Event): v
   stakeSnapshot.tvl = convertEthToDecimal(iStake.balance())
   stakeSnapshot.tvlUSD = stakeSnapshot.tvl.times(stakeToken.price)
   stakeSnapshot.timestamp = event.block.timestamp;
+  stakeSnapshot.pendingReward = convertEthToDecimal(iDistribute.getDistributeRewardForVault(contract));;
 
   stakeSnapshot.save()
 

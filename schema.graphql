@@ -105,6 +105,9 @@ type BondSnapshotRecord @entity {
   depositCummulated: BigDecimal!
   depositCummulatedUSD: BigDecimal!
   bondCummulated: BigDecimal!
+  bondPrice: BigDecimal!
+  bondDiscount: BigDecimal!
+  bondAvailable: BigDecimal!
   snapshot: Snapshot!
 }
 
@@ -115,6 +118,7 @@ type StakeSnapshotRecord @entity {
   timestamp: BigInt!
   tvl: BigDecimal!
   tvlUSD: BigDecimal!
+  pendingReward: BigDecimal!
   snapshot: Snapshot!
 }
 
