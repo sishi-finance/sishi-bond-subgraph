@@ -72,12 +72,14 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
     let bondContracts = registry.bonds
     for (let i = 0; i < bondContracts.length; i++) {
       let bondId = bondContracts[i]
-      let recordId = joinHyphen([bondId, latestSnapshot.id])
-      let currentRecord = BondSnapshotRecord.load(recordId) as BondSnapshotRecord
-      if(currentRecord != null) {
-        let recordToSave = getBondSnapshot(joinHyphen([currentRecord.contract, snapshot.id]), currentRecord.contract, snapshot.id)
+      let latestRecord = BondSnapshotRecord.load(joinHyphen([bondId, LATEST_ID])) as BondSnapshotRecord
+      if(latestRecord != null) {
+        let recordToSave = getBondSnapshot(joinHyphen([latestRecord.contract, snapshot.id]), latestRecord.contract, snapshot.id)
 
-        recordToSave.merge([currentRecord])
+        recordToSave.depositCummulated = latestRecord.depositCummulated;
+        recordToSave.depositCummulatedUSD = latestRecord.depositCummulatedUSD;
+        recordToSave.bondCummulated = latestRecord.bondCummulated;
+
         recordToSave.timestamp = saveSnapshotTimestamp;
         recordToSave.snapshot = snapshot.id;
         recordToSave.save()
@@ -89,11 +91,12 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
     for (let i = 0; i < stakesContracts.length; i++) {
       let stakeId = stakesContracts[i]
-      let recordId = joinHyphen([stakeId, latestSnapshot.id])
-      let currentRecord = StakeSnapshotRecord.load(recordId) as StakeSnapshotRecord
-      if(currentRecord != null) {
-        let recordToSave = getStakeSnapshot(joinHyphen([currentRecord.contract, snapshot.id]), currentRecord.contract, snapshot.id)
-        recordToSave.merge([currentRecord])
+      let latestRecord = StakeSnapshotRecord.load(joinHyphen([stakeId, LATEST_ID])) as StakeSnapshotRecord
+      if(latestRecord != null) {
+        let recordToSave = getStakeSnapshot(joinHyphen([latestRecord.contract, snapshot.id]), latestRecord.contract, snapshot.id)
+
+        recordToSave.tvl = latestRecord.tvl;
+        recordToSave.tvlUSD = latestRecord.tvlUSD;
         recordToSave.timestamp = saveSnapshotTimestamp;
         recordToSave.snapshot = snapshot.id;
         recordToSave.save()
@@ -135,12 +138,12 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
 export function updateBondSnapshot(contract: Address, event: ethereum.Event): void {
   let latestSnapshot = getLatestSnapshot();
-  let bondSnapshotId = joinHyphen([contract.toHex(), latestSnapshot.id])
+  let bondSnapshotId = joinHyphen([contract.toHex(), LATEST_ID])
 
   let iBond = DynamicBond.bind(contract);
   let depositToken = getToken(iBond.depositToken())
 
-  let bondSnapshot = getBondSnapshot(bondSnapshotId, contract.toHex(), latestSnapshot.id)
+  let bondSnapshot = getBondSnapshot(bondSnapshotId, contract.toHex(), LATEST_ID)
 
   bondSnapshot.depositCummulated = convertTokenToDecimal(iBond.depositCumulated(), BigInt.fromI32(depositToken.decimal));
   bondSnapshot.bondCummulated = convertEthToDecimal(iBond.bondCumulated());
@@ -154,11 +157,11 @@ export function updateBondSnapshot(contract: Address, event: ethereum.Event): vo
 
 export function updateStakeSnapshot(contract: Address, event: ethereum.Event): void {
   let latestSnapshot = getLatestSnapshot();
-  let stakeSnapshotId = joinHyphen([contract.toHex(), latestSnapshot.id])
+  let stakeSnapshotId = joinHyphen([contract.toHex(), LATEST_ID])
 
   let iStake = StakingVault.bind(contract);
 
-  let stakeSnapshot = getStakeSnapshot(stakeSnapshotId, contract.toHex(), latestSnapshot.id)
+  let stakeSnapshot = getStakeSnapshot(stakeSnapshotId, contract.toHex(), LATEST_ID)
   let stakeToken = getToken(iStake.WANT_TOKEN())
 
   stakeSnapshot.tvl = convertEthToDecimal(iStake.balance())

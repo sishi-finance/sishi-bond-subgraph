@@ -82,8 +82,8 @@ type DataRegistry @entity {
 type Snapshot @entity {
   id: ID!
   timestamp: BigInt!
-  bondsSnapshot: [BondSnapshotRecord!] @derivedFrom(field: "snapshot")
-  stakesSnapshot: [StakeSnapshotRecord!] @derivedFrom(field: "snapshot")
+  bondsSnapshot: [BondSnapshotRecord!]! @derivedFrom(field: "snapshot")
+  stakesSnapshot: [StakeSnapshotRecord!]! @derivedFrom(field: "snapshot")
 }
 
 type HourlySnappshot @entity {
