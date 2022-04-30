@@ -102,6 +102,9 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
   let lastID = latestSnapshot.timestamp.div(rounded).times(rounded)
   let nextID = timestamp.div(rounded).times(rounded);
 
+  latestSnapshot.circSupply = getSISHICirc()
+  latestSnapshot.percentOfStaked = getSISHIStaked().div(latestSnapshot.circSupply).times(BigDecimal.fromString("100"))
+
   if (nextID > lastID) {
     let saveSnapshotTimestamp = lastID.gt(BIG_INT_ZERO) ? lastID : nextID.minus(rounded)
     let snapshot = getSnapshot(saveSnapshotTimestamp)
@@ -148,8 +151,8 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
       }
     }
 
-    snapshot.circSupply = getSISHICirc()
-    snapshot.percentOfStaked = getSISHIStaked().div(snapshot.circSupply).times(BigDecimal.fromString("100"))
+    snapshot.circSupply = latestSnapshot.circSupply
+    snapshot.percentOfStaked = latestSnapshot.percentOfStaked
     snapshot.save();
 
     let hourlySnapshot = new HourlySnappshot(saveSnapshotTimestamp.toString())
