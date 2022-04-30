@@ -37,3 +37,7 @@ export let WBNB_ADDRESS = Address.fromString("0xbb4CdB9CBd36B01bD1cBaEBF2De08d91
 export let ADDRESS_DEAD = Address.fromString('0x000000000000000000000000000000000000DEAD')
 
 export let ADDRESS_SISHI = Address.fromString('0x8E8538c75f273aB2dF6AdEEcD3622A9c314fcCf3')
+
+export let ADDRESS_SISHI_BNB_LP = Address.fromString('0x8c7a5aaa69dd5e6d06596a3bf677037b599b8a88')
+
+export let ADDRESS_SISHI_BNB_LP_BOND = Address.fromString('0x7EB12b2EDE8B1D6B085950Cc6d4bD7bBd2CbB74D')

@@ -4,7 +4,7 @@ import { BondContract, BondSnapshotRecord, DailySnappshot, DataRegistry, HourlyS
 import { StakingVault } from "../generated/StakingVault/StakingVault";
 import { getBondPool, getBondRegistry, getToken } from "./share";
 import { convertEthToDecimal, convertTokenToDecimal, joinHyphen } from "./utils";
-import { ADDRESS_DEAD, ADDRESS_SISHI, BIG_INT_ONE_YEAR_SECONDS, BIG_INT_ZERO } from "./utils/const";
+import { ADDRESS_DEAD, ADDRESS_SISHI, ADDRESS_SISHI_BNB_LP, ADDRESS_SISHI_BNB_LP_BOND, BIG_INT_ONE_YEAR_SECONDS, BIG_INT_ZERO } from "./utils/const";
 import { getDecimals, getUSDRate } from "./utils/pricing";
 import { log } from '@graphprotocol/graph-ts'
 import { DistributeReward, StakingDistributor } from "../generated/StakingVault/StakingDistributor";
@@ -71,6 +71,13 @@ function getSISHIStaked(): BigDecimal {
 
 }
 
+function getProtocalOwnedLiquid(): BigDecimal {
+  let totalLiquid = convertEthToDecimal(ERC20.bind(ADDRESS_SISHI_BNB_LP).totalSupply())
+  let ownedLiquid = convertEthToDecimal(DynamicBond.bind(ADDRESS_SISHI_BNB_LP_BOND).depositCumulated())
+
+  return ownedLiquid.div(totalLiquid).times(BigDecimal.fromString("100"))
+}
+
 
 function getSISHICirc(): BigDecimal {
   let registry = getBondRegistry()
@@ -104,6 +111,7 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
   latestSnapshot.circSupply = getSISHICirc()
   latestSnapshot.percentOfStaked = getSISHIStaked().div(latestSnapshot.circSupply).times(BigDecimal.fromString("100"))
+  latestSnapshot.percentOfOwnLiquid = getProtocalOwnedLiquid();
 
   if (nextID > lastID) {
     let saveSnapshotTimestamp = lastID.gt(BIG_INT_ZERO) ? lastID : nextID.minus(rounded)
@@ -153,6 +161,7 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
     snapshot.circSupply = latestSnapshot.circSupply
     snapshot.percentOfStaked = latestSnapshot.percentOfStaked
+    snapshot.percentOfOwnLiquid = latestSnapshot.percentOfOwnLiquid
     snapshot.save();
 
     let hourlySnapshot = new HourlySnappshot(saveSnapshotTimestamp.toString())

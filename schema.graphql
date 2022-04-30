@@ -86,6 +86,7 @@ type Snapshot @entity {
   stakesSnapshot: [StakeSnapshotRecord!]! @derivedFrom(field: "snapshot")
   circSupply: BigDecimal!
   percentOfStaked: BigDecimal!
+  percentOfOwnLiquid: BigDecimal!
 }
 
 type HourlySnappshot @entity {
