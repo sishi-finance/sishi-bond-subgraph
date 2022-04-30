@@ -78,6 +78,10 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: StakingVault
+          file: ./abis/StakingVault.json
+        - name: StakingDistributor
+          file: ./abis/StakingDistributor.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -125,6 +129,10 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: StakingVault
+          file: ./abis/StakingVault.json
+        - name: StakingDistributor
+          file: ./abis/StakingDistributor.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -172,6 +180,10 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: StakingVault
+          file: ./abis/StakingVault.json
+        - name: StakingDistributor
+          file: ./abis/StakingDistributor.json
       eventHandlers:
         - event: AdjustBondTerm(uint256,uint256,uint256)
           handler: handleAdjustBondTerm
@@ -220,6 +232,8 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: DynamicBond
+          file: ./abis/DynamicBond.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -266,6 +280,8 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: DynamicBond
+          file: ./abis/DynamicBond.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -312,6 +328,8 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: DynamicBond
+          file: ./abis/DynamicBond.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -358,6 +376,8 @@ dataSources:
           file: ./abis/Pair.json
         - name: Factory
           file: ./abis/Factory.json
+        - name: DynamicBond
+          file: ./abis/DynamicBond.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval

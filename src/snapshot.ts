@@ -4,10 +4,11 @@ import { BondContract, BondSnapshotRecord, DailySnappshot, DataRegistry, HourlyS
 import { StakingVault } from "../generated/StakingVault/StakingVault";
 import { getBondPool, getBondRegistry, getToken } from "./share";
 import { convertEthToDecimal, convertTokenToDecimal, joinHyphen } from "./utils";
-import { BIG_INT_ONE_YEAR_SECONDS, BIG_INT_ZERO } from "./utils/const";
+import { ADDRESS_DEAD, ADDRESS_SISHI, BIG_INT_ONE_YEAR_SECONDS, BIG_INT_ZERO } from "./utils/const";
 import { getDecimals, getUSDRate } from "./utils/pricing";
 import { log } from '@graphprotocol/graph-ts'
 import { DistributeReward, StakingDistributor } from "../generated/StakingVault/StakingDistributor";
+import { ERC20 } from "../generated/DynamicBond/ERC20";
 
 
 
@@ -55,6 +56,43 @@ function getStakeSnapshot(id: string, contractId: string, snapshotId: string): S
   return snapshot as StakeSnapshotRecord
 }
 
+function getSISHIStaked(): BigDecimal {
+  let registry = getBondRegistry()
+
+  let allStakeValue = BigInt.fromI32(0)
+  let SISHI = ERC20.bind(ADDRESS_SISHI)
+
+  let stakeContracts = registry.stakes
+  for (let i = 0; i < stakeContracts.length; i++) {
+    allStakeValue = allStakeValue.plus(SISHI.balanceOf(Address.fromString(stakeContracts[i])))
+  }
+
+  return convertEthToDecimal(allStakeValue)
+
+}
+
+
+function getSISHICirc(): BigDecimal {
+  let registry = getBondRegistry()
+
+  let SISHI = ERC20.bind(ADDRESS_SISHI)
+
+  let totalSupply = SISHI.totalSupply()
+
+  let burned = SISHI.balanceOf(ADDRESS_DEAD)
+
+  let allBondValue = BigInt.fromI32(0)
+
+  let bondContracts = registry.bonds
+  for (let i = 0; i < bondContracts.length; i++) {
+    let contract = DynamicBond.bind(Address.fromString(bondContracts[i]))
+    allBondValue = allBondValue.plus(contract.bondAvailable())
+  }
+
+
+  return convertEthToDecimal(totalSupply.minus(burned).minus(allBondValue))
+
+}
 
 
 function checkAndTakeStapshot(timestamp: BigInt): void {
@@ -74,7 +112,7 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
     for (let i = 0; i < bondContracts.length; i++) {
       let bondId = bondContracts[i]
       let latestRecord = BondSnapshotRecord.load(joinHyphen([bondId, LATEST_ID])) as BondSnapshotRecord
-      if(latestRecord != null) {
+      if (latestRecord != null) {
         let recordToSave = getBondSnapshot(joinHyphen([latestRecord.contract, snapshot.id]), latestRecord.contract, snapshot.id)
 
         recordToSave.depositCummulated = latestRecord.depositCummulated;
@@ -97,7 +135,7 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
     for (let i = 0; i < stakesContracts.length; i++) {
       let stakeId = stakesContracts[i]
       let latestRecord = StakeSnapshotRecord.load(joinHyphen([stakeId, LATEST_ID])) as StakeSnapshotRecord
-      if(latestRecord != null) {
+      if (latestRecord != null) {
         let recordToSave = getStakeSnapshot(joinHyphen([latestRecord.contract, snapshot.id]), latestRecord.contract, snapshot.id)
 
         recordToSave.tvl = latestRecord.tvl;
@@ -110,6 +148,8 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
       }
     }
 
+    snapshot.circSupply = getSISHICirc()
+    snapshot.percentOfStaked = getSISHIStaked().div(snapshot.circSupply).times(BigDecimal.fromString("100"))
     snapshot.save();
 
     let hourlySnapshot = new HourlySnappshot(saveSnapshotTimestamp.toString())
@@ -172,6 +212,7 @@ export function updateStakeSnapshot(contract: Address, event: ethereum.Event): v
 
   let iStake = StakingVault.bind(contract);
   let iDistribute = StakingDistributor.bind(iStake.REWARD_DISTRIBUTOR());
+
 
   let stakeSnapshot = getStakeSnapshot(stakeSnapshotId, contract.toHex(), LATEST_ID)
   let stakeToken = getToken(iStake.WANT_TOKEN())

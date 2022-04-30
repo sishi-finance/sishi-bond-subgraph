@@ -84,6 +84,8 @@ type Snapshot @entity {
   timestamp: BigInt!
   bondsSnapshot: [BondSnapshotRecord!]! @derivedFrom(field: "snapshot")
   stakesSnapshot: [StakeSnapshotRecord!]! @derivedFrom(field: "snapshot")
+  circSupply: BigDecimal!
+  percentOfStaked: BigDecimal!
 }
 
 type HourlySnappshot @entity {

@@ -33,3 +33,7 @@ export let PANCAKESWAP_FACTORY_ADDRESS = Address.fromString("0xcA143Ce32Fe78f1f7
 export let BUSD_ADDRESS = Address.fromString("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56");
 
 export let WBNB_ADDRESS = Address.fromString("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c");
+
+export let ADDRESS_DEAD = Address.fromString('0x000000000000000000000000000000000000DEAD')
+
+export let ADDRESS_SISHI = Address.fromString('0x8E8538c75f273aB2dF6AdEEcD3622A9c314fcCf3')
