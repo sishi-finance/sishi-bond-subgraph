@@ -14,7 +14,7 @@ import { BondRecord } from "../generated/schema"
 import { getBondPool, getToken, getUser } from "./share"
 import { updateBondSnapshot } from "./snapshot"
 import { convertEthToDecimal, convertTokenToDecimal, joinHyphen } from "./utils"
-import { BIG_INT_ONE } from "./utils/const"
+import { BIG_INT_ONE, BIG_INT_ZERO } from "./utils/const"
 
 export function handleAdjustBondTerm(event: AdjustBondTerm): void { }
 
@@ -22,6 +22,9 @@ export function handleAdjustBondTermFinish(event: AdjustBondTermFinish): void { 
 
 export function handleBond(event: Bond): void {
 
+  if(event.params.payoutAmount == BIG_INT_ZERO)
+    return;
+    
   let entityId = joinHyphen([event.transaction.hash.toHex(), event.logIndex.toString()])
 
   let entity = new BondRecord(entityId)
@@ -53,7 +56,7 @@ export function handleBond(event: Bond): void {
   bondPool.save()
 
 
-  updateBondSnapshot(event.address, event);
+  updateBondSnapshot(event.address, event, true);
 }
 
 export function handleClaim(event: Claim): void { }

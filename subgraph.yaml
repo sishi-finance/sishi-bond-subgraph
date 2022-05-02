@@ -394,3 +394,50 @@ dataSources:
         - event: Unstake(indexed address,uint256,uint256)
           handler: handleUnstake
       file: ./src/staking.ts
+  - kind: ethereum/contract
+    name: PancakeLP
+    network: bsc
+    source:
+      address: "0x8c7a5aaa69dd5e6d06596a3bf677037b599b8a88"
+      abi: PancakeLP
+      startBlock: 17329192
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - Burn
+        - Mint
+        - Swap
+        - Sync
+        - Transfer
+      abis:
+        - name: PancakeLP
+          file: ./abis/PancakeLP.json
+        - name: StakingVault
+          file: ./abis/StakingVault.json
+        - name: StakingDistributor
+          file: ./abis/StakingDistributor.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: Pair
+          file: ./abis/Pair.json
+        - name: Factory
+          file: ./abis/Factory.json
+        - name: DynamicBond
+          file: ./abis/DynamicBond.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: Burn(indexed address,uint256,uint256,indexed address)
+          handler: handleBurn
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+        - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
+          handler: handleSwap
+        - event: Sync(uint112,uint112)
+          handler: handleSync
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/swap.ts

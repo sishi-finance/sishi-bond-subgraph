@@ -195,7 +195,7 @@ function checkAndTakeStapshot(timestamp: BigInt): void {
 
 
 
-export function updateBondSnapshot(contract: Address, event: ethereum.Event): void {
+export function updateBondSnapshot(contract: Address, event: ethereum.Event, shouldTakeSnapshot: boolean): void {
   let latestSnapshot = getLatestSnapshot();
   let bondSnapshotId = joinHyphen([contract.toHex(), LATEST_ID])
 
@@ -214,11 +214,12 @@ export function updateBondSnapshot(contract: Address, event: ethereum.Event): vo
   bondSnapshot.bondDiscount = BigDecimal.fromString("1").minus(bondSnapshot.bondPrice.div(payoutToken.price));
 
   bondSnapshot.save()
-
-  checkAndTakeStapshot(event.block.timestamp);
+  if (shouldTakeSnapshot) {
+    checkAndTakeStapshot(event.block.timestamp);
+  }
 }
 
-export function updateStakeSnapshot(contract: Address, event: ethereum.Event): void {
+export function updateStakeSnapshot(contract: Address, event: ethereum.Event, shouldTakeSnapshot: boolean): void {
   let latestSnapshot = getLatestSnapshot();
   let stakeSnapshotId = joinHyphen([contract.toHex(), LATEST_ID])
 
@@ -236,7 +237,24 @@ export function updateStakeSnapshot(contract: Address, event: ethereum.Event): v
 
   stakeSnapshot.save()
 
-  checkAndTakeStapshot(event.block.timestamp);
+  if (shouldTakeSnapshot) {
+    checkAndTakeStapshot(event.block.timestamp);
+  }
 
 }
 
+export function updateAll(event: ethereum.Event) : void {
+  let registry = getBondRegistry()
+  for (let i = 0; i < registry.bonds.length; i++) {
+    let address = Address.fromString(registry.bonds[i]);
+    updateBondSnapshot(address, event, false);
+  }
+
+  for (let i = 0; i < registry.stakes.length; i++) {
+    let address = Address.fromString(registry.stakes[i]);
+    updateStakeSnapshot(address, event, false);
+  }
+
+  checkAndTakeStapshot(event.block.timestamp);
+
+}

@@ -138,6 +138,8 @@ export function getUSDRate(token: Address, decimals: BigInt): BigDecimal {
 
     let token1USD = token1Amount.times(token1PriceUSD)
 
+    log.info('token0USD {} - token1USD {}', [token0USD.toString(), token1USD.toString()])
+
     return token0USD.plus(token1USD)
   }
 

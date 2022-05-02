@@ -13,6 +13,7 @@ import {
 import { getBondStake, getUser } from "./share"
 import { updateStakeSnapshot } from "./snapshot"
 import { convertEthToDecimal, joinHyphen } from "./utils"
+import { BIG_INT_ZERO } from "./utils/const"
 
 export function handleApproval(event: Approval): void {}
 
@@ -21,6 +22,10 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
 export function handlePaused(event: Paused): void {}
 
 export function handleStake(event: Stake): void {
+
+  if(event.params.amount == BIG_INT_ZERO)
+    return;
+
   let entityId = joinHyphen([event.transaction.hash.toHex(), event.logIndex.toString()])
 
   let entity = new StakeRecord(entityId)
@@ -44,7 +49,7 @@ export function handleStake(event: Stake): void {
   user.totalStake = user.totalStake.plus(entity.amount);
   user.save();
 
-  updateStakeSnapshot(event.address, event);
+  updateStakeSnapshot(event.address, event, true);
 
 }
 
@@ -71,7 +76,7 @@ export function handleUnstake(event: Unstake): void {
   user.totalUnstake = user.totalUnstake.plus(entity.amount);
   user.save();
 
-  updateStakeSnapshot(event.address, event);
+  updateStakeSnapshot(event.address, event, true);
 
 }
 
